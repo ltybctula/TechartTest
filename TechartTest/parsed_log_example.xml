@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes" ?> 
+
+<data source_type="com"> 
+	<source address="Serial0" speed="unknown">
+		<line direction="request" address="FE" command="46:Read EEPROM" crc="CA6C">
+			<raw_frame>FE 46 00 3B 01 CA 6C</raw_frame>
+			<raw_data>00 3B 01</raw_data>
+		</line>
+		<line direction="response" error="Timeout" />
+		<line direction="request" address="FE" command="46:Read EEPROM" crc="CA6C">
+			<raw_frame>FE 46 00 3B 01 CA 6C</raw_frame>
+			<raw_data>00 3B 01</raw_data>
+		</line>
+		<line direction="response" error="Timeout" />
+	</source>
+	<source address="Serial3" speed="unknown">
+		<line direction="request" address="68" command="46:Read EEPROM" crc="AE20">
+			<raw_frame>68 46 01 6A 02 AE 20</raw_frame>
+			<raw_data>01 6A 02</raw_data>
+		</line>
+		<line direction="response" address="68" command="46:Read EEPROM" crc="71BC">
+			<raw_frame>68 46 02 03 12 71 BC</raw_frame>
+			<raw_data>02 03 12</raw_data>
+		</line>
+		<line direction="request" address="68" command="04:Read Input registers" crc="F93A">
+			<raw_frame>68 04 00 10 00 10 F9 3A</raw_frame>
+			<raw_data>00 10 00 10</raw_data>
+		</line>
+		<line direction="response" address="68" command="04:Read Input registers" crc="1399">
+			<raw_frame>68 04 20 00 00 00 00 00 00 00 00 00 04 00 2E 00 2C 00 00 01 02 00 72 00 32 00 19 00 17 00 16 00 00 00 15 13 99</raw_frame>
+			<raw_data>20 00 00 00 00 00 00 00 00 00 04 00 2E 00 2C 00 00 01 02 00 72 00 32 00 19 00 17 00 16 00 00 00 15</raw_data>
+		</line>
+		<line direction="request" address="68" command="04:Read Input registers" crc="78FD">
+			<raw_frame>68 04 00 30 00 02 78 FD</raw_frame>
+			<raw_data>00 30 00 02</raw_data>
+		</line>
+		<line direction="response" address="68" command="04:Read Input registers" crc="8594">
+			<raw_frame>68 04 04 0E 08 0F 10 85 94</raw_frame>
+			<raw_data>04 0E 08 0F 10</raw_data>
+		</line>
+		<line direction="request" address="68" command="03:Read Holding registers" crc="83EC">
+			<raw_frame>68 03 00 02 FF FF 83 EC</raw_frame>
+			<raw_data>00 02 FF FF</raw_data>
+		</line>
+		<line direction="response" address="68" command="03:Read Holding registers" exception="03:Illegal data value" crc="0E5E">
+			<raw_frame>68 83 03 0E 5E</raw_frame>
+			<raw_data>03</raw_data>
+		</line>
+		<line direction="request" address="68" command="03:Read Holding registers" error="Wrong CRC" crc="83EC">
+			<raw_frame>68 03 00 FF FF FF 02 FF FF 83 EC</raw_frame>
+			<raw_data>00 FF FF FF 02 FF FF</raw_data>
+		</line>
+	</source>
+</data>
