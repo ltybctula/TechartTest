@@ -71,8 +71,8 @@ namespace TechartTest
 
     public partial class Form1 : Form
     {
-        public Dictionary<int, string> Exceptions = new Dictionary<int, string>();
-        public Dictionary<int, string> Command = new Dictionary<int, string>();
+        public Dictionary<byte, string> Exceptions = new Dictionary<byte, string>();
+        public Dictionary<byte, string> Command = new Dictionary<byte, string>();
         List<Record> Records = new List<Record>();
 
         public Form1()
@@ -84,7 +84,7 @@ namespace TechartTest
             while ((line = fileExceptions.ReadLine()) != null)
             {
                 string[] parse = line.Split(" - ");
-                Exceptions.Add(Convert.ToInt32(parse[0]), parse[1]);
+                Exceptions.Add(Convert.ToByte(parse[0], 16), parse[1]);
             }
             fileExceptions.Close();
 
@@ -92,14 +92,37 @@ namespace TechartTest
             while ((line = fileCommands.ReadLine()) != null)
             {
                 string[] parse = line.Split(" - ");
-                Command.Add(Convert.ToInt32(parse[0]), parse[1]);
+                Command.Add(Convert.ToByte(parse[0], 16), parse[1]);
             }
             fileCommands.Close();
         }
 
         private void ButtonSaveFile_Click(object sender, EventArgs e)
         {
-            saveFileDialog1.ShowDialog();
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                string line="";
+                StreamWriter file = new StreamWriter(File.OpenWrite(saveFileDialog1.FileName));
+                foreach (Record record in Records)
+                {
+                    if (record.Request.Lenght>= 4)
+                    {
+                        line += "Device " + record.Device + " ";
+                        line += "Request.Addr " + record.Request.Addr.ToString() + " ";
+                        line += "Request.Function" + record.Request.Function.ToString() + " ";
+                        line += "Request.Data" + record.Request.Data.ToString();
+                    }
+                    else if(record.Request.Lenght == 1)
+                    {
+                        line += "Device " + record.Device + " ";
+                        line += "Request.Addr " + record.Request.Addr.ToString() + "\r\n";
+                    }
+
+                    file.WriteLine(line);
+                }
+                file.Close();
+                Records = Records.OrderBy(record => record.Device).ToList();
+            }
         }
 
         private void ButtonOpenFile_Click(object sender, EventArgs e)
@@ -114,6 +137,7 @@ namespace TechartTest
                     Records.Add(new Record(line.Split("\t")));
                 }
                 file.Close();
+                Records = Records.OrderBy(record => record.Device).ToList();
             }
         }
 
