@@ -36,12 +36,7 @@ namespace TechartTest
         public string Command { get; set; }
         public List<byte> Data { get; set; }
         public uint CRC { get; set; }
-        /*
-        184	11:26:50	AppName IRP_MJ_WRITE    Serial0 SUCCESS Length 7: FE 46 00 3B 01 CA 6C 	
-        185	11:26:50	AppName IRP_MJ_READ Serial0 TIMEOUT Length 0: 	
-        534	11:26:50	AppName	IRP_MJ_WRITE	Serial3 SUCCESS	Length 7: 68 46 01 6A 02 AE 20 	
-        535	11:26:50	AppName	IRP_MJ_READ	Serial3	SUCCESS	Length 1: 68 	
-        */
+
         public Request(string _data)
         {
             string[] parse = _data.Split(" ");
@@ -54,11 +49,9 @@ namespace TechartTest
                 Function = Convert.ToByte(parse[3], 16);
 
                 string[] data = parse[4..(parse.Length - 2)];
-                //Data = new byte[data.Length];
                 Data = new List<byte>();
                 for (int i = 0; i < data.Length; i++)
                 {
-                    //Data[i] = Convert.ToByte(data[i], 16);
                     Data.Add(Convert.ToByte(data[i], 16));
                 }
             }
