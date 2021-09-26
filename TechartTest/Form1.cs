@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json;
 using System.IO;
 using System.Windows.Forms;
 
@@ -93,21 +94,38 @@ namespace TechartTest
                     Records.Add(new Record(line.Split("\t")));
                 }
                 file.Close();
-                Records = Records.OrderBy(record => record.SourceType).ToList();
+                Records = Records.OrderBy(record => record.Address).ToList();
                 StringBuilder str = new StringBuilder();
                 foreach (Record record in Records)
                 {
                     str.Clear();
-                    if(!device.Equals(record.SourceType))
+                    if(!device.Equals(record.Address))
                     {
-                        device = record.SourceType;
-                        str.AppendFormat("SourceType:={0}; ", record.SourceType);
+                        device = record.Address;
+                        str.AppendFormat("SourceType:={0}; ", record.Address);
                         str.AppendLine();
                     }
                     str.AppendFormat("\tNumber={0}; ", record.Number);
                     str.AppendFormat("Result={0}; ", record.Result);
                     str.AppendFormat("Request.Addr={0}; ", record.Request.Addr.ToString("X2"));
-                    if (record.Request.Lenght >= 4)
+                    if(record.Request.Lenght == 5)
+                    {
+                        if (Exceptions.ContainsKey(record.Request.Function))
+                        {
+                            str.AppendFormat("Request.Function={0} - {1}; ", record.Request.Function.ToString("X2"), Exceptions[record.Request.Function]);
+                        }
+                        else
+                        {
+                            str.AppendFormat("Request.Function={0} - неизвестная ошибка; ", record.Request.Function.ToString("X2"));
+                        }
+
+                        str.AppendFormat("Request.Data=");
+                        foreach (byte b in record.Request.Data)
+                        {
+                            str.AppendFormat("{0}|", b.ToString("X2"));
+                        }
+                    }
+                    else if (record.Request.Lenght >= 4)
                     {
                         if (Command.ContainsKey(record.Request.Function))
                         {
@@ -125,7 +143,6 @@ namespace TechartTest
                         }
                     }
                     str.AppendLine();
-                    //str.AppendLine(new String('=', 20));
                     richTextBox1.Text += str.ToString();
                 }
                 richTextBox1.Text += new String('-', 20);
@@ -156,19 +173,76 @@ namespace TechartTest
             return CRC;
         }
     }
+/*
+<!-- Типы тегов и атрибутов: -->
+<!-- M(mandatory) - обязательный -->
+<!-- O(optional) - необязательный, в зависимости от содержания данных -->
+<!-- S(single) - тег может повторяться только один раз -->
+<!-- P(plural) - тег может повторяться более одного раза -->
+
+<!-- [M, S] data - корневой элемент выходного файла.Может содержать 0 и более элементов source -->
+<!-- [M, S] тип источника данных: { com, unknown } -->
+<data source_type = "" >
+
+    < !-- [M, P] source - элемент источника, который содержит все данные для данного источника из всего файла -->
+	<!-- [M, S] address - адрес источника, если доступен.Например, COM2 или unknown -->
+	<!-- [O, S] speed - скорость передачи данных(Например, 9600, 19200, 115200) -->
+	<source address = "" speed="">
+		<!-- [O, P] line - элемент данных, считанный из лога.Полный запрос/ответ обычно занимают во входном логе одну строку -->
+		<!-- [M, S] direction - направление данных: request, response, unknown -->
+		<!-- [O, S] address - адрес запрашиваемого/отвечающего устройства (1 байт в HEX формате. Например, address= "68") -->
+		<!-- [O, S] command - команда к(от) устройству(формат: <номер команды>:<описание>. Например, command= "46:Write EEPROM")-->
+		<!-- [O, S] exception - атрибут описания исключения(только для типов direction = "response" или direction = "unknown"). 
+		Формат: <номер исключения>:<описание>. Например, exception="04:Data error" -->
+		<!-- [O, S] error - атрибут описания ошибки(только для типов direction = "response" или direction = "unknown"). 
+		Формат: <описание>. Например, error="Frame length error", error="Timeout". 
+		При наличии данного атрибута остальные атрибуты и тег raw_data могут быть опущены -->
+		<!-- [O, S] crc - CRC16 контроль целостности данных -->
+		<line
+            direction = ""
+
+            address=""
+			command=""
+			exception=""
+			error=""
+			crc="">
+			<!-- raw_frame - полный пакет данных(HEX данные) -->
+			<raw_frame>frame</raw_frame>
+			<!-- raw_data - данные без заголовка и CRC(HEX данные). 
+			Т.е.данные без address, command и crc.
+           Данный тег не нужен в случае, если в пакете содержится ошибка или нарушена целостность(по CRC) -->
+			<raw_data>data</raw_data>
+		</line>
+	</source>
+</data>
+*/
+    public class Source
+    {
+        string SourceType { get; set; }
+        public List<Record> Records { get; set; }
+        Source()
+        {
+            SourceType = "COM";
+            Records = new List<Record>();
+        }
+    }
 
     public class Record
     {
         public int Number { get; set; }
         public string Time { get; set; }
-        public string SourceType { get; set; }
+        public string Source { get; set; }
+        public string Address { get; set; }
+        public string Speed { get; set; }
         public string Result { get; set; }
         public Request Request { get; set; }
         public Record(string[] line)
         {
             Number = Convert.ToInt32(line[0]);
             Time = line[1];
-            SourceType = line[4];
+            Source = "COM";
+            Address = line[4];
+            Speed = "Unknown";
             Result = line[5];
             Request = new Request(line[6]);
         }
