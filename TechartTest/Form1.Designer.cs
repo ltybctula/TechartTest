@@ -38,7 +38,13 @@ namespace TechartTest
             // 
             // openFileDialog1
             // 
-            this.openFileDialog1.FileName = "openFileDialog1";
+            this.openFileDialog1.Filter = "log files (*.log)|*.log|All files (*.*)|*.*";
+            // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.DefaultExt = "xml";
+            this.saveFileDialog1.Filter = "XML files(*.xml)|*.xml|JSON files(*.json)|*.json|txt files(*.xml)|*.txt|All files" +
+    "(*.*)|*.*";
             // 
             // buttonOpenFile
             // 

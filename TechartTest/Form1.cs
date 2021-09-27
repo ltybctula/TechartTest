@@ -43,7 +43,7 @@ namespace TechartTest
                 File.WriteAllText(saveFileDialog1.FileName+".json", json);
             }
         }
-
+        
         private void ButtonOpenFile_Click(object sender, EventArgs e)
         {
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
@@ -60,7 +60,8 @@ namespace TechartTest
                 file.Close();
                 Source.Records = Source.Records.OrderBy(record => record.Address).ToList();
 
-                /*#region richText
+                #region richText
+                /*
                 StringBuilder str = new StringBuilder();
                 foreach (Record record in Source.Records)
                 {
@@ -99,8 +100,8 @@ namespace TechartTest
                 }
                 richTextBox1.Text += new String('-', 20);
                 richTextBox1.Text += "\n";
-                richTextBox1.Text += "Файл прочитан.";
-                #endregion*/
+                richTextBox1.Text += "Файл прочитан.";*/
+                #endregion
 
                 myData = new Data();
                 myData.Source_type = Source.SourceType;
@@ -131,12 +132,11 @@ namespace TechartTest
                     {
                         dataSourceLine.error = record.Error;
                     }
-
                     //dataSourceLine.exception = record.Request.Exception;
-
                     dataSource.Line.Add(dataSourceLine);
                 }
                 buttonSaveFile.Enabled = true;
+                saveFileDialog1.FileName = openFileDialog1.SafeFileName;
             }
         }
         uint CRC16(byte[] data, int data_size)
