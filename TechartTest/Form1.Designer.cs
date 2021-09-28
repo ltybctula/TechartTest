@@ -43,8 +43,7 @@ namespace TechartTest
             // saveFileDialog1
             // 
             this.saveFileDialog1.DefaultExt = "xml";
-            this.saveFileDialog1.Filter = "XML files(*.xml)|*.xml|JSON files(*.json)|*.json|txt files(*.xml)|*.txt|All files" +
-    "(*.*)|*.*";
+            this.saveFileDialog1.Filter = "XML files(*.xml)|*.xml|JSON files(*.json)|*.json|Text files(*.txt)|*.txt";
             // 
             // buttonOpenFile
             // 
