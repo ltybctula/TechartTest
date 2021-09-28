@@ -49,8 +49,44 @@ namespace TechartTest
                         File.WriteAllText(saveFileDialog1.FileName, json);
                         break;
                     case ".txt":
-                        string text = JsonSerializer.Serialize(myData);
-                        File.WriteAllText(saveFileDialog1.FileName, text);
+                        StringBuilder str = new StringBuilder();
+                        str.AppendFormat("SourceType: {0}\r\n", myData.Source_type);
+                        foreach (DataSource ds in myData.Source)
+                        {
+                            str.AppendFormat("\tSource: Address= {0} Speed={1}\r\n", ds.Address, ds.Speed);
+                            foreach (DataSourceLine dsl in ds.Line)
+                            {
+                                if (String.IsNullOrEmpty(dsl.error))
+                                {
+                                    str.AppendFormat("\t\tLine: Direction={0} Address={1}", dsl.direction, dsl.address);
+                                    if (!String.IsNullOrEmpty(dsl.command))
+                                    {
+                                        str.AppendFormat(" Command='{0}'", dsl.command);
+                                    }
+                                    if (!String.IsNullOrEmpty(dsl.exception))
+                                    {
+                                        str.AppendFormat(" Exception='{0}'", dsl.exception);
+                                    }
+                                    if (dsl.error_crc)
+                                    {
+                                        str.AppendFormat(" Error='Wrong CRC'");
+                                    }
+                                    if (!String.IsNullOrEmpty(dsl.crc))
+                                    {
+                                        str.AppendFormat(" CRC='{0}'", dsl.crc);
+                                    }
+                                    str.AppendLine();
+
+                                    str.AppendFormat("\t\t\tRawFrame: {0}\r\n", dsl.raw_frame);
+                                    str.AppendFormat("\t\t\tRawData: {0}\r\n", dsl.raw_data);
+                                }
+                                else
+                                {
+                                    str.AppendFormat("\t\tLine: Direction={0} Error='{1}'\r\n", dsl.direction, dsl.error);
+                                }
+                            }
+                        }
+                        File.WriteAllText(saveFileDialog1.FileName, str.ToString());
                         break;
                     default:
                         MessageBox.Show("Извините, данный формат не поддреживается", "Warning", MessageBoxButtons.OK);
@@ -126,7 +162,7 @@ namespace TechartTest
                     str.AppendFormat("\tSource: Address= {0} Speed={1}\r\n", ds.Address, ds.Speed);
                     foreach (DataSourceLine dsl in ds.Line)
                     {
-                        if (String.IsNullOrEmpty(dsl.error))// && dsl.error_crc)
+                        if (String.IsNullOrEmpty(dsl.error))
                         {
                             str.AppendFormat("\t\tLine: Direction={0} Address={1}", dsl.direction, dsl.address);
                             if (!String.IsNullOrEmpty(dsl.command))
