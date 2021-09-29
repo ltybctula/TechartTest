@@ -19,6 +19,7 @@ namespace TechartTest
     {
         public Source Source = new Source();
         Data myData;
+        Data_ref Data_Ref;
 
         public Form1()
         {
@@ -37,12 +38,14 @@ namespace TechartTest
                 {
                     case ".xml":
                         XmlSerializer serializer = new XmlSerializer(typeof(Data));
-                        FileStream fs = new FileStream(saveFileDialog1.FileName, FileMode.Create);
-                        XmlWriter writer = XmlWriter.Create(fs);
-                        var xsn = new XmlSerializerNamespaces();
-                        xsn.Add(string.Empty, string.Empty);
-                        serializer.Serialize(writer, myData, xsn);
-                        fs.Close();
+                        {
+                            FileStream fs = new FileStream(saveFileDialog1.FileName, FileMode.Create);
+                            XmlWriter writer = XmlWriter.Create(fs);
+                            var xsn = new XmlSerializerNamespaces();
+                            xsn.Add(string.Empty, string.Empty);
+                            serializer.Serialize(writer, myData, xsn);
+                            fs.Close(); 
+                        }
                         break;
                     case ".json":
                         string json = JsonSerializer.Serialize(myData);
@@ -99,16 +102,19 @@ namespace TechartTest
         {
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
+                Data_Ref = new Data_ref(openFileDialog1.FileName);
                 richTextBox1.Text = "";
                 Source.Records.Clear();
                 string line, device = "";
-                StreamReader file = new StreamReader(File.OpenRead(openFileDialog1.FileName));
-                while ((line = file.ReadLine()) != null)
                 {
-                    line = line.Trim();
-                    Source.Records.Add(new Record(line.Split("\t")));
+                    StreamReader file = new StreamReader(File.OpenRead(openFileDialog1.FileName));
+                    while ((line = file.ReadLine()) != null)
+                    {
+                        line = line.Trim();
+                        Source.Records.Add(new Record(line.Split("\t")));
+                    }
+                    file.Close();
                 }
-                file.Close();
                 Source.Records = Source.Records.OrderBy(record => record.Address).ToList();
 
                 myData = new Data();
@@ -199,7 +205,7 @@ namespace TechartTest
                 #endregion
 
                 buttonSaveFile.Enabled = true;
-                saveFileDialog1.FileName = openFileDialog1.SafeFileName;
+                saveFileDialog1.FileName = openFileDialog1.SafeFileName.Substring(0, openFileDialog1.SafeFileName.LastIndexOf('.'))+".xml";
             }
         }
     }
