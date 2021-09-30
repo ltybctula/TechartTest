@@ -17,7 +17,7 @@ namespace TechartTest
 {
     public partial class Form1 : Form
     {
-        public Source Source = new Source();
+        //public Source Source = new Source();
         Data myData;
         Data_ref Data_Ref;
 
@@ -37,59 +37,22 @@ namespace TechartTest
                 switch (extension.ToLower())
                 {
                     case ".xml":
-                        XmlSerializer serializer = new XmlSerializer(typeof(Data));
+                        XmlSerializer serializer = new XmlSerializer(typeof(Data_ref));
                         {
                             FileStream fs = new FileStream(saveFileDialog1.FileName, FileMode.Create);
                             XmlWriter writer = XmlWriter.Create(fs);
                             var xsn = new XmlSerializerNamespaces();
                             xsn.Add(string.Empty, string.Empty);
-                            serializer.Serialize(writer, myData, xsn);
+                            serializer.Serialize(writer, Data_Ref, xsn);
                             fs.Close(); 
                         }
                         break;
                     case ".json":
-                        string json = JsonSerializer.Serialize(myData);
+                        string json = JsonSerializer.Serialize(Data_Ref);
                         File.WriteAllText(saveFileDialog1.FileName, json);
                         break;
                     case ".txt":
-                        StringBuilder str = new StringBuilder();
-                        str.AppendFormat("SourceType: {0}\r\n", myData.Source_type);
-                        foreach (DataSource ds in myData.Source)
-                        {
-                            str.AppendFormat("\tSource: Address= {0} Speed={1}\r\n", ds.Address, ds.Speed);
-                            foreach (DataSourceLine dsl in ds.Line)
-                            {
-                                if (String.IsNullOrEmpty(dsl.error))
-                                {
-                                    str.AppendFormat("\t\tLine: Direction={0} Address={1}", dsl.direction, dsl.address);
-                                    if (!String.IsNullOrEmpty(dsl.command))
-                                    {
-                                        str.AppendFormat(" Command='{0}'", dsl.command);
-                                    }
-                                    if (!String.IsNullOrEmpty(dsl.exception))
-                                    {
-                                        str.AppendFormat(" Exception='{0}'", dsl.exception);
-                                    }
-                                    if (dsl.error_crc)
-                                    {
-                                        str.AppendFormat(" Error='Wrong CRC'");
-                                    }
-                                    if (!String.IsNullOrEmpty(dsl.crc))
-                                    {
-                                        str.AppendFormat(" CRC='{0}'", dsl.crc);
-                                    }
-                                    str.AppendLine();
-
-                                    str.AppendFormat("\t\t\tRawFrame: {0}\r\n", dsl.raw_frame);
-                                    str.AppendFormat("\t\t\tRawData: {0}\r\n", dsl.raw_data);
-                                }
-                                else
-                                {
-                                    str.AppendFormat("\t\tLine: Direction={0} Error='{1}'\r\n", dsl.direction, dsl.error);
-                                }
-                            }
-                        }
-                        File.WriteAllText(saveFileDialog1.FileName, str.ToString());
+                        File.WriteAllText(saveFileDialog1.FileName, Data_Ref.ToString());
                         break;
                     default:
                         MessageBox.Show("Извините, данный формат не поддреживается", "Warning", MessageBoxButtons.OK);
@@ -104,7 +67,7 @@ namespace TechartTest
             {
                 Data_Ref = new Data_ref(openFileDialog1.FileName);
                 richTextBox1.Text = "";
-                Source.Records.Clear();
+/*                Source.Records.Clear();
                 string line, device = "";
                 {
                     StreamReader file = new StreamReader(File.OpenRead(openFileDialog1.FileName));
@@ -158,10 +121,10 @@ namespace TechartTest
                         dataSourceLine.error = record.Error;
                     }
                     dataSource.Line.Add(dataSourceLine);
-                }
+                }*/
 
                 #region richText
-                StringBuilder str = new StringBuilder();
+                /*StringBuilder str = new StringBuilder();
                 str.AppendFormat("SourceType: {0}\r\n", myData.Source_type);
                 foreach (DataSource ds in myData.Source)
                 {
@@ -197,8 +160,8 @@ namespace TechartTest
                             str.AppendFormat("\t\tLine: Direction={0} Error='{1}'\r\n", dsl.direction, dsl.error);
                         }
                     }
-                }
-                richTextBox1.Text += str;
+                }*/
+                richTextBox1.Text += Data_Ref.ToString();
                 richTextBox1.Text += new String('-', 20);
                 richTextBox1.Text += "\r\n";
                 richTextBox1.Text += "Файл прочитан.";
@@ -210,6 +173,7 @@ namespace TechartTest
         }
     }
 
+/*
     public class Source
     {
         public string SourceType { get; set; }
@@ -236,11 +200,11 @@ namespace TechartTest
         public Record(string[] line)
         {
             string[] direction = line[3].Split('_');
-            Number = Convert.ToInt32(line[0]);
+            //Number = Convert.ToInt32(line[0]);
             Time = line[1];
             Address = line[4];
             Speed = "Unknown";
-            Result = line[5];
+            //Result = line[5];
             Error_CRC = false;
             if (!line[5].Equals("TIMEOUT"))
             {
@@ -366,6 +330,7 @@ namespace TechartTest
             }
         }
     }
+*/
 
     public class Commands
     {
@@ -374,13 +339,15 @@ namespace TechartTest
         {
             string line;
             Command = new Dictionary<int, string>();
-            StreamReader fileCommands = new StreamReader(File.OpenRead("commands.vcb"));
-            while ((line = fileCommands.ReadLine()) != null)
+            using (StreamReader fileCommands = new StreamReader(File.OpenRead("commands.vcb")))
             {
-                string[] parse = line.Split(" - ");
-                Command.Add(Convert.ToByte(parse[0], 16), parse[1]);
+                while ((line = fileCommands.ReadLine()) != null)
+                {
+                    string[] parse = line.Split(" - ");
+                    Command.Add(Convert.ToByte(parse[0], 16), parse[1]);
+                }
+                fileCommands.Close();
             }
-            fileCommands.Close();
         }
     }
 
@@ -391,17 +358,19 @@ namespace TechartTest
         {
             string line;
             Exception = new Dictionary<int, string>();
-            StreamReader fileExceptions = new StreamReader(File.OpenRead("exceptions.vcb"));
-            while ((line = fileExceptions.ReadLine()) != null)
+            using (StreamReader fileExceptions = new StreamReader(File.OpenRead("exceptions.vcb")))
             {
-                string[] parse = line.Split(" - ");
-                Exception.Add(Convert.ToByte(parse[0], 16), parse[1]);
+                while ((line = fileExceptions.ReadLine()) != null)
+                {
+                    string[] parse = line.Split(" - ");
+                    Exception.Add(Convert.ToByte(parse[0], 16), parse[1]);
+                }
+                fileExceptions.Close();
             }
-            fileExceptions.Close();
         }
     }
 
-    [XmlRoot("data")]
+/*    [XmlRoot("data")]
     public partial class Data
     {
         [System.Xml.Serialization.XmlElementAttribute("source", Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
@@ -458,6 +427,6 @@ namespace TechartTest
         public bool error_crc { get; set; }
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string crc { get; set; }
-    }
+    }*/
 }
 
