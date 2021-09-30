@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Windows.Forms;
 using System.Xml.Serialization;
 
 namespace TechartTest
@@ -24,40 +25,49 @@ namespace TechartTest
             DataSource_ref dataSource_Ref_tmp;
             string line;
             string[] lineSplit;
-
-            StreamReader file = new StreamReader(File.OpenRead(_logFile));
-            while ((line = file.ReadLine()) != null)
+            try
             {
-                line = line.Trim();
-                lineSplit = line.Split('\t');
-                dataSource_Ref_tmp = new DataSource_ref();
-
-                string[] lineRequest = lineSplit[6].Split(' ');
-                int lenghtRequest = Convert.ToInt32(lineRequest[1].TrimEnd(':'));
-
-                if (lenghtRequest == 1)
+                using (StreamReader file = new StreamReader(File.OpenRead(_logFile)))
                 {
-                    line = file.ReadLine();
-                    line = line.Trim();
-                    lineSplit = line.Split('\t');
-                    lineSplit[6] = lineSplit[6].Replace(":", ": " + lineRequest[2]);
-                }
+                    while ((line = file.ReadLine()) != null)
+                    {
+                        line = line.Trim();
+                        lineSplit = line.Split('\t');
+                        dataSource_Ref_tmp = new DataSource_ref();
 
-                if (Source.Exists(a => a.Address.Equals(lineSplit[4])))
-                {
-                    dataSource_Ref_tmp = Source.Find(a => a.Address.Equals(lineSplit[4]));
-                    dataSource_Ref_tmp.Line.Add(dataSource_Ref_tmp.AddDataSourceLine(lineSplit));
-                }
-                else
-                {
-                    dataSource_Ref_tmp.Address = lineSplit[4];
-                    dataSource_Ref_tmp.Speed = "Unknown";
-                    dataSource_Ref_tmp.Line.Add(dataSource_Ref_tmp.AddDataSourceLine(lineSplit));
-                    Source.Add(dataSource_Ref_tmp);
+                        string[] lineRequest = lineSplit[6].Split(' ');
+                        int lenghtRequest = Convert.ToInt32(lineRequest[1].TrimEnd(':'));
+
+                        if (lenghtRequest == 1)
+                        {
+                            line = file.ReadLine();
+                            line = line.Trim();
+                            lineSplit = line.Split('\t');
+                            lineSplit[6] = lineSplit[6].Replace(":", ": " + lineRequest[2]);
+                        }
+
+                        if (Source.Exists(a => a.Address.Equals(lineSplit[4])))
+                        {
+                            dataSource_Ref_tmp = Source.Find(a => a.Address.Equals(lineSplit[4]));
+                            dataSource_Ref_tmp.Line.Add(dataSource_Ref_tmp.AddDataSourceLine(lineSplit));
+                        }
+                        else
+                        {
+                            dataSource_Ref_tmp.Address = lineSplit[4];
+                            dataSource_Ref_tmp.Speed = "Unknown";
+                            dataSource_Ref_tmp.Line.Add(dataSource_Ref_tmp.AddDataSourceLine(lineSplit));
+                            Source.Add(dataSource_Ref_tmp);
+                        }
+                    }
+                    file.Close();
                 }
             }
-            file.Close();
+            catch
+            {
+                MessageBox.Show("Не удалось прочитать файл логов.", "Error", MessageBoxButtons.OK);
+            }
         }
+
         public override string ToString()
         {
             StringBuilder toString = new StringBuilder();

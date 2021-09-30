@@ -27,6 +27,7 @@ namespace TechartTest
         [XmlIgnore]
         public bool ErrorCRC { get; set; }
         [System.Xml.Serialization.XmlAttributeAttribute("crc", DataType = "unsignedInt")]
+        [XmlElement(IsNullable = false)]
         public uint CRC { get; set; }
 
         public uint CRC16(byte[] data, int data_size)
