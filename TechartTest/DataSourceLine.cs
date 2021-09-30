@@ -15,20 +15,21 @@ namespace TechartTest
         [System.Xml.Serialization.XmlAttributeAttribute("direction")]
         public string Direction { get; set; }
         [System.Xml.Serialization.XmlAttributeAttribute("address")]
-        public byte Address { get; set; }
+        public string Address { get; set; }
+        //public byte Address { get; set; }
         [XmlIgnore]
         public byte Function { get; set; }
         [System.Xml.Serialization.XmlAttributeAttribute("command")]
         public string Command { get; set; }
         [System.Xml.Serialization.XmlAttributeAttribute("exception")]
         public string Exception { get; set; }
-        [System.Xml.Serialization.XmlAttributeAttribute("Error")]
+        [System.Xml.Serialization.XmlAttributeAttribute("error")]
         public string Error { get; set; }
         [XmlIgnore]
         public bool ErrorCRC { get; set; }
-        [System.Xml.Serialization.XmlAttributeAttribute("crc", DataType = "unsignedInt")]
-        [XmlElement(IsNullable = false)]
-        public uint CRC { get; set; }
+        [System.Xml.Serialization.XmlAttributeAttribute("crc")]
+        public string CRC { get; set; }
+        //public uint CRC { get; set; }
 
         public uint CRC16(byte[] data, int data_size)
         {

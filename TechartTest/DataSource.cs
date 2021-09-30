@@ -29,18 +29,32 @@ namespace TechartTest
             int lenghtRequest = Convert.ToInt32(lineRequest[1].TrimEnd(':'));
             if (!lineSplit[5].Equals("TIMEOUT"))
             {
+                string[] directionRequest = lineSplit[3].Split('_');
+                switch (directionRequest[^1])
+                {
+                    case "READ":
+                        dataSourceLine_Ref.Direction = "Response";
+                        break;
+                    case "WRITE":
+                        dataSourceLine_Ref.Direction = "Request";
+                        break;
+                    default:
+                        dataSourceLine_Ref.Direction = "Unknown";
+                        break;
+                }
+
                 dataSourceLine_Ref.RawFrame = lineSplit[6].Substring(lineSplit[6].IndexOf(':') + 1).Trim();
                 string[] parseRawFrame = dataSourceLine_Ref.RawFrame.Split(' ');
                 //------------------------------------------------------------------------------------
                 #region Request
                 Exceptions exceptions = new Exceptions();
                 Commands commands = new Commands();
-                dataSourceLine_Ref.Address = Convert.ToByte(lineRequest[2], 16);
+                dataSourceLine_Ref.Address = lineRequest[2];
 
                 if (lenghtRequest > 1)
                 {
                     string crc = lineRequest[^1] + lineRequest[^2];
-                    dataSourceLine_Ref.CRC = Convert.ToUInt32(crc, 16);
+                    dataSourceLine_Ref.CRC = crc;
                     //------------------------------------------------------------------------------------
                     //Вычисление CRC Modbus, сравнение со считанным.
                     byte[] data = new byte[parseRawFrame.Length - 2];
@@ -49,7 +63,7 @@ namespace TechartTest
                         data[i] = Convert.ToByte(parseRawFrame[i], 16);
                     }
                     uint calc_crc = dataSourceLine_Ref.CRC16(data, data.Length);
-                    if (dataSourceLine_Ref.CRC != calc_crc)
+                    if (Convert.ToUInt32(crc, 16) != calc_crc)
                     {
                         dataSourceLine_Ref.ErrorCRC = true;
                     }
@@ -80,29 +94,13 @@ namespace TechartTest
                         dataSourceLine_Ref.Command = dataSourceLine_Ref.Function.ToString("X2") + ": Неизвестная команда";
                     }
                 }
-                else if (lenghtRequest == 1)
-                {
-
-                }
                 #endregion Request
             }
             else
             {
                 dataSourceLine_Ref.Error = lineSplit[5];
             }
-            string[] directionRequest = lineSplit[3].Split('_');
-            switch (directionRequest[^1])
-            {
-                case "READ":
-                    dataSourceLine_Ref.Direction = "Response";
-                    break;
-                case "WRITE":
-                    dataSourceLine_Ref.Direction = "Request";
-                    break;
-                default:
-                    dataSourceLine_Ref.Direction = "Unknown";
-                    break;
-            }
+
             return dataSourceLine_Ref;
         }
     }

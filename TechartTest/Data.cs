@@ -79,7 +79,7 @@ namespace TechartTest
                 {
                     if (String.IsNullOrEmpty(dataSourceLine.Error))
                     {
-                        toString.AppendFormat("\t\tLine: Direction={0} Address={1}", dataSourceLine.Direction, dataSourceLine.Address.ToString("X2"));
+                        toString.AppendFormat("\t\tLine: Direction={0} Address={1}", dataSourceLine.Direction, dataSourceLine.Address);
                         if (!String.IsNullOrEmpty(dataSourceLine.Command))
                         {
                             toString.AppendFormat(" Command='{0}'", dataSourceLine.Command);
@@ -94,7 +94,7 @@ namespace TechartTest
                         }
                         if (!String.IsNullOrEmpty(dataSourceLine.CRC.ToString()))
                         {
-                            toString.AppendFormat(" CRC='{0}'", dataSourceLine.CRC.ToString("X2"));
+                            toString.AppendFormat(" CRC='{0}'", dataSourceLine.CRC);
                         }
                         toString.AppendLine();
                         toString.AppendFormat("\t\t\tRawFrame: {0}\r\n", dataSourceLine.RawFrame);
