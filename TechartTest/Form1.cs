@@ -23,8 +23,8 @@ namespace TechartTest
             {
 
                 var extension = Path.GetExtension(saveFileDialog1.FileName);
-                //try
-                //{
+                try
+                {
                     switch (extension.ToLower())
                     {
                         case ".xml":
@@ -57,11 +57,11 @@ namespace TechartTest
                             MessageBox.Show("Извините, данный формат не поддреживается", "Warning", MessageBoxButtons.OK);
                             break;
                     }
-                //}
-                //catch
-                //{
-                    //MessageBox.Show("Произошла ошибка записи в файл.", "Error", MessageBoxButtons.OK);
-                //}
+                }
+                catch
+                {
+                    MessageBox.Show("Произошла ошибка записи в файл.", "Error", MessageBoxButtons.OK);
+                }
             }
         }
 
