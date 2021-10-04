@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TechartTestConsole": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\tmp\\ModbusLogsParser task appendix\\raw_log_example.log\" format:json outputfile:raw_log_example111"
+    }
+  }
+}
