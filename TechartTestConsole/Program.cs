@@ -46,7 +46,6 @@ namespace TechartTest
                             var xsn = new XmlSerializerNamespaces();
                             xsn.Add(string.Empty, string.Empty);
                             serializer.Serialize(writer, data, xsn);
-                            fileStream.Close();
                             break;
 
                         case "json":
