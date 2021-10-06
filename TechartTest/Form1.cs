@@ -9,7 +9,7 @@ namespace TechartTest
 {
     public partial class Form1 : Form
     {
-        Data_ref Data_Ref;
+        Data data;
 
         public Form1()
         {
@@ -28,18 +28,18 @@ namespace TechartTest
                     switch (extension.ToLower())
                     {
                         case ".xml":
-                            XmlSerializer serializer = new XmlSerializer(typeof(Data_ref));
+                            XmlSerializer serializer = new XmlSerializer(typeof(Data));
                             using (FileStream fs = new FileStream(saveFileDialog1.FileName, FileMode.Create))
                             {
                                 XmlWriter writer = XmlWriter.Create(fs);
                                 var xsn = new XmlSerializerNamespaces();
                                 xsn.Add(string.Empty, string.Empty);
-                                serializer.Serialize(writer, Data_Ref, xsn);
+                                serializer.Serialize(writer, data, xsn);
                                 fs.Close();
                             }
                             break;
                         case ".json":
-                            string json = JsonSerializer.Serialize(Data_Ref);
+                            string json = JsonSerializer.Serialize(data);
                             using (StreamWriter outputFile = new StreamWriter(saveFileDialog1.FileName))
                             {
                                 outputFile.WriteLine(json);
@@ -49,7 +49,7 @@ namespace TechartTest
                         case ".txt":
                             using (StreamWriter outputFile = new StreamWriter(saveFileDialog1.FileName))
                             {
-                                outputFile.WriteLine(Data_Ref.ToString());
+                                outputFile.WriteLine(data.ToString());
                             }
                             //File.WriteAllText(saveFileDialog1.FileName, Data_Ref.ToString());
                             break;
@@ -69,9 +69,9 @@ namespace TechartTest
         {
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                Data_Ref = new Data_ref(openFileDialog1.FileName);
+                data = new Data(openFileDialog1.FileName);
                 richTextBox1.Text = "";
-                richTextBox1.Text += Data_Ref.ToString();
+                richTextBox1.Text += data.ToString();
                 richTextBox1.Text += new String('-', 20);
                 richTextBox1.Text += "\r\n";
                 richTextBox1.Text += "Файл прочитан.";

@@ -7,12 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="commands.vcb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="exceptions.vcb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <Compile Remove="Commands.cs" />
+    <Compile Remove="Data.cs" />
+    <Compile Remove="DataSource.cs" />
+    <Compile Remove="DataSourceLine.cs" />
+    <Compile Remove="Exceptions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="commands.vcb" />
+    <None Remove="exceptions.vcb" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TechartTestClassLibrary\TechartTestClassLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="parsed_log_example.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
