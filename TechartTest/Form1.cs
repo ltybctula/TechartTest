@@ -21,41 +21,38 @@ namespace TechartTest
         {
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
-
-                var extension = Path.GetExtension(saveFileDialog1.FileName);
+                string extension = Path.GetExtension(saveFileDialog1.FileName);
                 try
                 {
-                    switch (extension.ToLower())
+                    using (FileStream fileStream = new FileStream(saveFileDialog1.FileName, FileMode.Create))
                     {
-                        case ".xml":
-                            XmlSerializer serializer = new XmlSerializer(typeof(Data));
-                            using (FileStream fs = new FileStream(saveFileDialog1.FileName, FileMode.Create))
-                            {
-                                XmlWriter writer = XmlWriter.Create(fs);
+                        StreamWriter outputFile;
+                        switch (extension.ToLower())
+                        {
+                            case ".xml":
+                                XmlSerializer serializer = new XmlSerializer(typeof(Data));
+                                XmlWriter writer = XmlWriter.Create(fileStream);
                                 var xsn = new XmlSerializerNamespaces();
                                 xsn.Add(string.Empty, string.Empty);
                                 serializer.Serialize(writer, data, xsn);
-                                fs.Close();
-                            }
-                            break;
-                        case ".json":
-                            string json = JsonSerializer.Serialize(data);
-                            using (StreamWriter outputFile = new StreamWriter(saveFileDialog1.FileName))
-                            {
+                                break;
+
+                            case ".json":
+                                string json = JsonSerializer.Serialize(data);
+                                outputFile = new StreamWriter(fileStream);
                                 outputFile.WriteLine(json);
-                            }
-                            //File.WriteAllText(saveFileDialog1.FileName, json);
-                            break;
-                        case ".txt":
-                            using (StreamWriter outputFile = new StreamWriter(saveFileDialog1.FileName))
-                            {
+                                break;
+
+                            case ".txt":
+                                outputFile = new StreamWriter(fileStream);
                                 outputFile.WriteLine(data.ToString());
-                            }
-                            //File.WriteAllText(saveFileDialog1.FileName, Data_Ref.ToString());
-                            break;
-                        default:
-                            MessageBox.Show("Извините, данный формат не поддреживается", "Warning", MessageBoxButtons.OK);
-                            break;
+                                break;
+
+                            default:
+                                MessageBox.Show("Извините, данный формат не поддреживается", "Warning", MessageBoxButtons.OK);
+                                break;
+                        }
+                        fileStream.Close();
                     }
                 }
                 catch
