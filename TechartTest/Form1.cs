@@ -26,7 +26,7 @@ namespace TechartTest
                 {
                     using (FileStream fileStream = new FileStream(saveFileDialog1.FileName, FileMode.Create))
                     {
-                        StreamWriter outputFile;
+                        StreamWriter outputFile = new StreamWriter(fileStream);
                         switch (extension.ToLower())
                         {
                             case ".xml":
@@ -39,20 +39,18 @@ namespace TechartTest
 
                             case ".json":
                                 string json = JsonSerializer.Serialize(data);
-                                outputFile = new StreamWriter(fileStream);
-                                outputFile.WriteLine(json);
+                                outputFile.Write(json);
                                 break;
 
                             case ".txt":
-                                outputFile = new StreamWriter(fileStream);
-                                outputFile.WriteLine(data.ToString());
+                                outputFile.Write(data.ToString());
                                 break;
 
                             default:
                                 MessageBox.Show("Извините, данный формат не поддреживается", "Warning", MessageBoxButtons.OK);
                                 break;
                         }
-                        fileStream.Close();
+                        outputFile.Close();
                     }
                 }
                 catch

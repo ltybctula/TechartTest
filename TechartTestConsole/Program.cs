@@ -37,7 +37,7 @@ namespace TechartTest
                 Data data = new Data(args[0]);
                 using (FileStream fileStream = new FileStream(fileName + "." + extension, FileMode.Create))
                 {
-                    StreamWriter outputFile;
+                    StreamWriter outputFile = new StreamWriter(fileStream);
                     switch (extension.ToLower())
                     {
                         case "xml":
@@ -50,12 +50,11 @@ namespace TechartTest
 
                         case "json":
                             string json = JsonSerializer.Serialize(data);
-                            outputFile = new StreamWriter(fileStream);
                             outputFile.Write(json);
+
                             break;
 
                         case "txt":
-                            outputFile = new StreamWriter(fileStream);
                             outputFile.Write(data.ToString());
                             break;
 
@@ -65,7 +64,7 @@ namespace TechartTest
                             Help();
                             break;
                     }
-                    fileStream.Close();
+                    outputFile.Close();
                 }
             }
             else
